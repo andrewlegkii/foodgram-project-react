@@ -1,6 +1,7 @@
-FROM python:3.7-slim
+# Build stage
+FROM python:3.7-slim as build
 
-WORKDIR /app
+WORKDIR /build
 
 COPY requirements.txt .
 
@@ -9,4 +10,11 @@ RUN pip install -r requirements.txt --no-cache-dir
 
 COPY . .
 
-CMD ["gunicorn", "foodgram.wsgi:application", "--bind", "0:8000" ]
+# Production stage
+FROM python:3.7-slim
+
+WORKDIR /app
+
+COPY --from=build /build .
+
+CMD ["gunicorn", "foodgram.wsgi:application", "--bind", "0:8000"]
