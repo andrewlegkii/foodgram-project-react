@@ -1,2 +1,2 @@
 # praktikum_new_diplom
-158.160.29.62
+http://158.160.6.99/recipes
