@@ -23,14 +23,15 @@ from permissions import IsAdminAuthorOrReadOnly
 from serializers import (
     IngredientSerializer,
     RecipeReadSerializer,
-    RecipeShortSerializer,
     RecipeWriteSerializer,
     TagSerializer,
 )
 
 
 class TagViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
-    """Вьюсет для модели тега."""
+    """
+    Вьюсет для модели тега.
+    """
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
@@ -38,7 +39,9 @@ class TagViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.Gene
 
 
 class IngredientViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
-    """Вьюсет для модели ингридиента."""
+    """
+    Вьюсет для модели ингридиента.
+    """
 
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
@@ -48,7 +51,9 @@ class IngredientViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewse
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    """Вьюсет для модели рецепта."""
+    """
+    Вьюсет для модели рецепта.
+    """
 
     queryset = Recipe.objects.select_related("author").prefetch_related(
         "tags", "favorites", "shopping_cart", "ingredients_in_recipe__ingredient"
