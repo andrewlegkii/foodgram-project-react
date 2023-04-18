@@ -80,7 +80,6 @@ class IngredientInRecipe(models.Model):
         default_related_name = 'ingredients_in_recipe'
 
 
-
 class Recipe(models.Model):
     """
     Модель рецепта.
