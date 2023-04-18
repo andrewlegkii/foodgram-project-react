@@ -102,21 +102,21 @@ class SubscribeSerializer(CustomUserSerializer):
 
 
 class IngredientInRecipeWriteSerializer(ModelSerializer):
-    id = IntegerField(write_only=True)
+    ingredient = PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
     amount = IntegerField(required=True)
     name = SerializerMethodField()
     measurement_unit = SerializerMethodField()
 
     class Meta:
         model = IngredientInRecipe
-        fields = ('id', 'amount', 'name', 'measurement_unit')
+        fields = ('ingredient', 'amount', 'name', 'measurement_unit')
 
-    def get_measurement_unit(self, ingredient):
-        measurement_unit = ingredient.ingredient.measurement_unit
+    def get_measurement_unit(self, ingredient_in_recipe):
+        measurement_unit = ingredient_in_recipe.ingredient.measurement_unit
         return measurement_unit
 
-    def get_name(self, ingredient):
-        name = ingredient.ingredient.name
+    def get_name(self, ingredient_in_recipe):
+        name = ingredient_in_recipe.ingredient.name
         return name
 
 
@@ -189,21 +189,7 @@ class RecipeWriteSerializer(ModelSerializer):
 
     def validate_ingredients(self, value):
         if not value:
-            raise ValidationError({
-                'ingredients': 'Нужен хотя бы один ингредиент!'
-            })
-        ingredients_list = []
-        for item in value:
-            ingredient = get_object_or_404(Ingredient, id=item['id'])
-            if ingredient in ingredients_list:
-                raise ValidationError({
-                    'ingredients': 'Ингридиенты не должны повторяться!'
-                })
-            if int(item['amount']) <= 0:
-                raise ValidationError({
-                    'amount': 'Количество ингредиента должно быть больше 0!'
-                })
-            ingredients_list.append(ingredient)
+            raise ValidationError('Нужен хотя бы один ингредиент!')
         return value
 
     def validate_tags(self, value):
@@ -219,14 +205,16 @@ class RecipeWriteSerializer(ModelSerializer):
         return value
 
     def create_ingredients_amounts(self, ingredients, recipe):
+        ingredients_amounts = []
         for ingredient in ingredients:
-            ing, _ = IngredientInRecipe.objects.get_or_create(
-                ingredient=get_object_or_404(
-                    Ingredient.objects.filter(id=ingredient['id'])
-                ),
-                amount=ingredient['amount'],
+            ing = IngredientInRecipe.objects.create(
+                recipe=recipe,
+                ingredient=ingredient['ingredient'],
+                quantity=ingredient['amount']
             )
-            recipe.ingredients.add(ing.id)
+            ingredients_amounts.append(ing)
+        return ingredients_amounts
+
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')
@@ -240,7 +228,6 @@ class RecipeWriteSerializer(ModelSerializer):
     def update(self, instance, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        # instance = super().update(instance, validated_data)
         instance.tags.clear()
         instance.tags.set(tags)
         instance.ingredients.clear()

@@ -56,32 +56,29 @@ class Ingredient(models.Model):
 
 class IngredientInRecipe(models.Model):
     """Модель количества ингридиентов в рецепте."""
+    recipe = models.ForeignKey(
+        models.Recipe,
+        on_delete=models.CASCADE,
+        related_name='ingredients',
+        verbose_name='Рецепт',
+    )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
-        related_name='ingredient_list',
-        verbose_name='Ингредиенты в рецепте',
+        related_name='ingredient_in_recipe',
+        verbose_name='Ингредиент',
     )
     amount = models.IntegerField(
         default=1,
         validators=[
             MinValueValidator(1, 'Минимальное значение - 1')
         ],
-        verbose_name='Количество ингредиента'
+        verbose_name='Количество ингредиента',
     )
 
     class Meta:
-        default_related_name = 'ingridients_recipe'
-        constraints = [
-            UniqueConstraint(
-                fields=('ingredient', 'amount'),
-                name='unique_ingredient_in_recipe'),
-        ]
-        verbose_name = 'Ингредиент в рецепте'
-        verbose_name_plural = 'Ингредиенты в рецепте'
+        default_related_name = 'ingredients_in_recipe'
 
-    def __str__(self):
-        return f'{self.ingredient} – {self.amount}'
 
 
 class Recipe(models.Model):

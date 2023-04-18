@@ -40,7 +40,7 @@ class TagViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.Gene
 class IngredientViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     """Вьюсет для модели ингридиента."""
 
-    queryset = Ingredient.objects.all().prefetch_related("ingredients_in_recipe")
+    queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (IsAuthenticated,)
     filter_backends = [DjangoFilterBackend]
