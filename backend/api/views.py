@@ -28,7 +28,9 @@ from serializers import (
 )
 
 
-class TagViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+class TagViewSet(mixins.RetrieveModelMixin, 
+                mixins.ListModelMixin, 
+                viewsets.GenericViewSet):
     """
     Вьюсет для модели тега.
     """
@@ -38,7 +40,9 @@ class TagViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.Gene
     permission_classes = (IsAdminAuthorOrReadOnly,)
 
 
-class IngredientViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+class IngredientViewSet(mixins.RetrieveModelMixin,
+                        mixins.ListModelMixin,
+                        viewsets.GenericViewSet):
     """
     Вьюсет для модели ингридиента.
     """
