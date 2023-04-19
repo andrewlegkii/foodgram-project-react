@@ -16,3 +16,7 @@ class IsAdminAuthorOrReadOnly(BasePermission):
         return (request.method in ('GET',)
                 or obj.author == request.user
                 or request.user.role == UserRole.ADMIN)
+
+
+class IsAuthorOrReadOnly(BasePermission):
+    pass

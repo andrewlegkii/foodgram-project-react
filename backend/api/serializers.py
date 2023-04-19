@@ -204,15 +204,12 @@ class RecipeWriteSerializer(ModelSerializer):
         return value
 
     def create_ingredients_amounts(self, ingredients, recipe):
-        ingredients_amounts = []
         for ingredient in ingredients:
-            ing = IngredientInRecipe.objects.create(
+            IngredientInRecipe.objects.create(
                 recipe=recipe,
                 ingredient=ingredient['ingredient'],
                 quantity=ingredient['amount']
             )
-            ingredients_amounts.append(ing)
-        return ingredients_amounts
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')

@@ -55,13 +55,6 @@ class Ingredient(models.Model):
 
 
 class IngredientInRecipe(models.Model):
-    """Модель количества ингридиентов в рецепте."""
-    recipe = models.ForeignKey(
-        models.Recipe,
-        on_delete=models.CASCADE,
-        related_name='ingredients',
-        verbose_name='Рецепт',
-    )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
@@ -78,6 +71,12 @@ class IngredientInRecipe(models.Model):
 
     class Meta:
         default_related_name = 'ingredients_in_recipe'
+
+    def __str__(self):
+        return f'{self.ingredient.name} ({self.amount} {self.ingredient.measure_unit})'
+
+    def get_recipe_name(self):
+        return self.recipe.name
 
 
 class Recipe(models.Model):
@@ -103,11 +102,6 @@ class Recipe(models.Model):
     text = models.TextField(
         verbose_name='Описание рецепта'
     )
-    ingredients = models.ManyToManyField(
-        IngredientInRecipe,
-        related_name='recipes',
-        verbose_name='Ингредиенты в рецепте'
-    )
     tags = models.ManyToManyField(
         Tag,
         related_name='recipes',
@@ -122,6 +116,12 @@ class Recipe(models.Model):
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
         auto_now_add=True
+    )
+    ingredients = models.ManyToManyField(
+        Ingredient,
+        through='IngredientInRecipe',
+        related_name='recipes',
+        verbose_name='Ингредиенты'
     )
 
     class Meta:
@@ -161,6 +161,10 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f'{self.user} добавил "{self.recipe}" в Избранное'
+
+
+class Favourite(models.Model):
+    pass
 
 
 class ShoppingCart(models.Model):
