@@ -72,10 +72,6 @@ class IngredientInRecipe(models.Model):
     class Meta:
         default_related_name = 'ingredients_in_recipe'
 
-    def __str__(self):
-        return f'{self.ingredient.name} ({self.amount} {self.ingredient.measure_unit})'
-
-
     def get_recipe_name(self):
         return self.recipe.name
 
