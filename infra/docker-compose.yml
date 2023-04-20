@@ -9,7 +9,7 @@ services:
       - ./.env
 
   backend:
-    image: megulya/foodgram_backend:latest
+    image: diablik666/foodgram_backend:latest
     restart: always
     volumes:
       - static_value:/app/staticfiles/
@@ -20,7 +20,7 @@ services:
       - db
 
   frontend:
-    image: megulya/foodgram_frontend:latest
+    image: diablik666/foodgram_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
