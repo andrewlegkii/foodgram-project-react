@@ -1,5 +1,5 @@
 # FOODGRAM
-http://84.201.154.235/recipes
+http://84.201.154.235/
 login - legki(legkiy.a@inbox.eu)
 pass - 1234
 
