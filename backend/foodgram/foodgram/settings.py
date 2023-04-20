@@ -6,14 +6,11 @@ load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'yr5)-=3r(bwd6j0kr(zk(v6-2t*-%a_ds$zzad51#@a3c9q%ce'
+SECRET_KEY = 'fu^vmkps30t(_zoc7y9-gp^xm8a@ni5ugk6ltv44s(w5)39s@)'
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -22,21 +19,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django_filters',
     'rest_framework',
-    # 'corsheaders',
     'rest_framework.authtoken',
     'djoser',
-    'django_filters',
-    'users.apps.UsersConfig',
-    'recipes.apps.RecipesConfig',
     'api.apps.ApiConfig',
-    'colorfield',
+    'recipes.apps.RecipesConfig',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -64,31 +59,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-
 # DATABASES = {
 #     'default': {
-#         'ENGINE': os.getenv('DB_ENGINE'),
-#         'NAME': os.getenv('DB_NAME'),
-#         'USER': os.getenv('POSTGRES_USER'),
-#         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-#         'HOST': os.getenv('DB_HOST'),
-#         'PORT': os.getenv('DB_PORT'),
+#         'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
+#         'NAME': os.getenv('DB_NAME', default='postgres'),
+#         'USER': os.getenv('POSTGRES_USER', default='postgres'),
+#         'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
+#         'HOST': os.getenv('DB_HOST', default='db'),
+#         'PORT': os.getenv('DB_PORT', default='5432')
 #     }
 # }
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
-# Password validation
-# https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -105,11 +92,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/2.2/topics/i18n/
-
-LANGUAGE_CODE = 'ru'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'UTC'
 
@@ -119,46 +102,37 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.2/howto/static-files/
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
-
 AUTH_USER_MODEL = 'users.User'
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
 
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-    ),
+    ],
+
+    'DEFAULT_PAGINATION_CLASS':
+        'api.pagination.LimitPageNumberPaginator',
+    'PAGE_SIZE': 6,
+    'SEARCH_PARAM': 'name',
 }
 
 DJOSER = {
-    'SERIALIZERS': {
-        'user_create': 'api.serializers.CustomUserCreateSerializer',
-        'user': 'api.serializers.CustomUserSerializer',
-        'current_user': 'api.serializers.CustomUserSerializer',
-    },
-
-    'PERMISSIONS': {
-        'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
-        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
-    },
+    'SERIALIZERS':
+        {'user_create': 'api.serializers.CustomUserCreateSerializer',
+         'user': 'api.serializers.CustomUserSerializer',
+         'current_user': 'api.serializers.CustomUserSerializer', },
+    'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
+    'PERMISSIONS': {
+        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+        'user': ['rest_framework.permissions.IsAuthenticatedOrReadOnly']}
 }
 
-# CORS_URLS_REGEX = r'^/api/.*$'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# CORS_ALLOWED_ORIGINS = [
-#     'http://localhost:3000',
-# ]
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
