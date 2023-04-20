@@ -1,7 +1,7 @@
 # FOODGRAM
 http://84.201.154.235/recipes
 login - legki(legkiy.a@inbox.eu)
-pass - 1234l
+pass - 1234
 
 This is a sample project that demonstrates how to use Docker Compose to run a web application with multiple services.
 
