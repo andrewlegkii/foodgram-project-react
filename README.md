@@ -1,7 +1,7 @@
 p.s. Починил возможность создание юзера, но пришлось вернуть изначальный вид кода. Мне проделать все исправления по прошлым ревью?
 # FOODGRAM
 http://84.201.154.235/
-login - legki(legkiy.a@inbox.eu)
+login - bss.bzz@mail.ru
 pass - 1234
 
 This is a sample project that demonstrates how to use Docker Compose to run a web application with multiple services.
