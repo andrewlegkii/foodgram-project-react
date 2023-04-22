@@ -4,6 +4,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
 
+
 User = get_user_model()
 
 
@@ -55,13 +56,20 @@ class Ingredient(models.Model):
 
 
 class IngredientInRecipe(models.Model):
-    """Модель количества ингридиентов в рецепте."""
+    recipe = models.ForeignKey(
+        models.Recipe,
+        on_delete=models.CASCADE,
+        related_name='recipe_ingredients',
+        verbose_name='Рецепт',
+    )
+
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
         related_name='ingredient_list',
         verbose_name='Ингредиенты в рецепте',
     )
+
     amount = models.IntegerField(
         default=1,
         validators=[
@@ -71,17 +79,11 @@ class IngredientInRecipe(models.Model):
     )
 
     class Meta:
-        default_related_name = 'ingridients_recipe'
-        constraints = [
-            UniqueConstraint(
-                fields=('ingredient', 'amount'),
-                name='unique_ingredient_in_recipe'),
-        ]
         verbose_name = 'Ингредиент в рецепте'
         verbose_name_plural = 'Ингредиенты в рецепте'
 
     def __str__(self):
-        return f'{self.ingredient} – {self.amount}'
+        return f'{self.ingredient} - {self.amount} ({self.recipe})'
 
 
 class Recipe(models.Model):
@@ -108,7 +110,8 @@ class Recipe(models.Model):
         verbose_name='Описание рецепта'
     )
     ingredients = models.ManyToManyField(
-        IngredientInRecipe,
+        Ingredient,
+        through='IngredientInRecipe',
         related_name='recipes',
         verbose_name='Ингредиенты в рецепте'
     )
