@@ -14,7 +14,7 @@ from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
                             ShoppingCart, Tag)
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import CustomPagination
-from .permissions import IsAdminOrReadOnly, IsAdminAuthorOrReadOnly
+from .permissions import IsAuthenticatedOrReadOnly, AllowAny
 from .serializers import (IngredientSerializer, RecipeReadSerializer,
                           RecipeShortSerializer, RecipeWriteSerializer,
                           TagSerializer)
@@ -24,39 +24,51 @@ class TagViewSet(ReadOnlyModelViewSet):
     """Вьюсет для модели тега."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (AllowAny,)
 
 
 class IngredientViewSet(ReadOnlyModelViewSet):
     """Вьюсет для модели ингридиента."""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (AllowAny,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
+
+
+class RecipePermissions(IsAuthenticatedOrReadOnly):
+    
+    def has_object_permission(self, request, view, obj):
+        if request.method in SAFE_METHODS:
+            return True
+        return request.user == obj.author
 
 
 class RecipeViewSet(ModelViewSet):
     """Вьюсет для модели рецепта."""
     queryset = Recipe.objects.all()
-    permission_classes = (IsAdminAuthorOrReadOnly,)
+    permission_classes = [RecipePermissions]
     pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        if self.request.user.is_authenticated:
+            serializer.save(author=self.request.user)
+        else:
+            serializer.save()
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
             return RecipeReadSerializer
         return RecipeWriteSerializer
-
+    
     @action(
         detail=True,
         methods=['post', 'delete'],
         permission_classes=[IsAuthenticated]
     )
+    
     def favorite(self, request, pk):
         """Метод для добавления/удаления из избранного."""
         if request.method == 'POST':
