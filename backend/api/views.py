@@ -69,7 +69,6 @@ class RecipeViewSet(ModelViewSet):
     )
 
     def favorite(self, request, pk):
-        """Метод для добавления/удаления из избранного."""
         if request.method == 'POST':
             return self.add_to(Favorite, request.user, pk)
         else:
