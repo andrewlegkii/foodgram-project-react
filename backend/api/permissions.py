@@ -16,5 +16,5 @@ class IsAdminAuthorOrReadOnly(BasePermission):
                 or request.user.role == UserRole.ADMIN)
 
     def has_permission(self, request, view):
-        return (request.method in SAFE_METHODS 
+        return (request.method in SAFE_METHODS
                 or request.user.is_authenticated and request.method == 'POST')

@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import IntegerField, SerializerMethodField
+from rest_framework.fields import SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer, ReadOnlyField
 
@@ -239,7 +239,8 @@ class RecipeWriteSerializer(ModelSerializer):
         instance.tags.clear()
         instance.tags.set(tags)
         instance.ingredients.clear()
-        self.create_ingredients_amounts(ingredients=ingredients, recipe=instance)
+        self.create_ingredients_amounts(ingredients=ingredients,
+                                        recipe=instance)
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
