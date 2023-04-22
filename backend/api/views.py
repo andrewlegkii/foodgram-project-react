@@ -37,7 +37,6 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 
 
 class RecipePermissions(IsAuthenticatedOrReadOnly):
-    
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return True
@@ -62,13 +61,13 @@ class RecipeViewSet(ModelViewSet):
         if self.request.method in SAFE_METHODS:
             return RecipeReadSerializer
         return RecipeWriteSerializer
-    
+
     @action(
         detail=True,
         methods=['post', 'delete'],
         permission_classes=[IsAuthenticated]
     )
-    
+
     def favorite(self, request, pk):
         """Метод для добавления/удаления из избранного."""
         if request.method == 'POST':
