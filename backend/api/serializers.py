@@ -102,7 +102,9 @@ class SubscribeSerializer(CustomUserSerializer):
 
 
 class IngredientInRecipeWriteSerializer(ModelSerializer):
-    ingredient = PrimaryKeyRelatedField(source='ingredient', queryset=Ingredient.objects.all())
+    ingredient = PrimaryKeyRelatedField(source='ingredient',
+                                        queryset=Ingredient.objects.all()
+                                        )
     name = SerializerMethodField()
     measurement_unit = SerializerMethodField()
 
@@ -115,7 +117,6 @@ class IngredientInRecipeWriteSerializer(ModelSerializer):
 
     def get_name(self, ingredient_in_recipe):
         return ingredient_in_recipe.ingredient.name
-
 
 
 class IngredientInRecipeSerializer(ModelSerializer):
@@ -216,7 +217,10 @@ class RecipeWriteSerializer(ModelSerializer):
         for ingredient in ingredients:
             ingredient_id = ingredient['id']
             amount = ingredient['amount']
-            ingredient_instance = IngredientInRecipe(recipe=recipe, amount=amount, ingredient_id=ingredient_id)
+            ingredient_instance = IngredientInRecipe(recipe=recipe,
+                                                     amount=amount,
+                                                     ingredient_id=ingredient_id
+                                                     )
             ingredient_instances.append(ingredient_instance)
         IngredientInRecipe.objects.bulk_create(ingredient_instances)
 
