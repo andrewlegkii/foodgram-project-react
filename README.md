@@ -30,7 +30,7 @@ Navigate to the project directory:
 cd project
 
 Create a .env file for your environment variables:
-cp .env.example .env
+cp .env.e .env
 
 Update the environment variables in .env as needed.
 
