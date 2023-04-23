@@ -9,12 +9,13 @@ from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.permissions import AllowAny
 
 from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
                             ShoppingCart, Tag)
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import CustomPagination
-from .permissions import IsAuthenticatedOrReadOnly, AllowAny
+from .permissions import IsAdminOrReadOnly, IsAdminAuthorOrReadOnly, IsAuthenticatedOrReadOnly
 from .serializers import (IngredientSerializer, RecipeReadSerializer,
                           RecipeShortSerializer, RecipeWriteSerializer,
                           TagSerializer)
@@ -36,26 +37,16 @@ class IngredientViewSet(ReadOnlyModelViewSet):
     filterset_class = IngredientFilter
 
 
-class RecipePermissions(IsAuthenticatedOrReadOnly):
-    def has_object_permission(self, request, view, obj):
-        if request.method in SAFE_METHODS:
-            return True
-        return request.user == obj.author
-
-
 class RecipeViewSet(ModelViewSet):
     """Вьюсет для модели рецепта."""
     queryset = Recipe.objects.all()
-    permission_classes = [RecipePermissions]
+    permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
     pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
 
     def perform_create(self, serializer):
-        if self.request.user.is_authenticated:
-            serializer.save(author=self.request.user)
-        else:
-            serializer.save()
+        serializer.save(author=self.request.user)
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:

@@ -102,8 +102,7 @@ class SubscribeSerializer(CustomUserSerializer):
 
 
 class IngredientInRecipeWriteSerializer(ModelSerializer):
-
-    ingredient = PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    ingredient = PrimaryKeyRelatedField(source='ingredient', queryset=Ingredient.objects.all())
     name = SerializerMethodField()
     measurement_unit = SerializerMethodField()
 
@@ -116,6 +115,7 @@ class IngredientInRecipeWriteSerializer(ModelSerializer):
 
     def get_name(self, ingredient_in_recipe):
         return ingredient_in_recipe.ingredient.name
+
 
 
 class IngredientInRecipeSerializer(ModelSerializer):
@@ -186,22 +186,16 @@ class RecipeWriteSerializer(ModelSerializer):
 
     def validate_ingredients(self, value):
         if not value:
-            raise ValidationError({
-                'ingredients': 'Нужен хотя бы один ингредиент!'
-            })
-
+            raise ValueError('Нужен хотя бы один ингредиент!')
         ingredients_ids = []
         for item in value:
             ingredient = get_object_or_404(Ingredient, id=item['id'])
-            if ingredient.id in ingredients_ids:
-                raise ValidationError({
-                    'ingredients': 'Ингридиенты не должны повторяться!'
-                })
-            if int(item['amount']) <= 0:
-                raise ValidationError({
-                    'amount': 'Количество ингредиента должно быть больше 0!'
-                })
-            ingredients_ids.append(ingredient.id)
+        if ingredient.id in ingredients_ids:
+            raise ValueError('Ингредиенты не должны повторяться!')
+        amount = int(item['amount'])
+        if amount <= 0:
+            raise ValueError('Количество ингредиента должно быть больше 0!')
+        ingredients_ids.append(ingredient.id)
         return value
 
     def validate_tags(self, value):
@@ -218,12 +212,13 @@ class RecipeWriteSerializer(ModelSerializer):
         return value
 
     def create_ingredients_amounts(self, ingredients, recipe):
+        ingredient_instances = []
         for ingredient in ingredients:
-            IngredientInRecipe.objects.create(
-                recipe=recipe,
-                ingredient=get_object_or_404(Ingredient, id=ingredient['id']),
-                amount=ingredient['amount'],
-            )
+            ingredient_id = ingredient['id']
+            amount = ingredient['amount']
+            ingredient_instance = IngredientInRecipe(recipe=recipe, amount=amount, ingredient_id=ingredient_id)
+            ingredient_instances.append(ingredient_instance)
+        IngredientInRecipe.objects.bulk_create(ingredient_instances)
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')
