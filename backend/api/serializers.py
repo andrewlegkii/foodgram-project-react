@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.db.models import CharField
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
@@ -102,21 +103,22 @@ class SubscribeSerializer(CustomUserSerializer):
 
 
 class IngredientInRecipeWriteSerializer(ModelSerializer):
-    ingredient = PrimaryKeyRelatedField(source='ingredient',
-                                        queryset=Ingredient.objects.all()
-                                        )
-    name = SerializerMethodField()
-    measurement_unit = SerializerMethodField()
+    ingredient = PrimaryKeyRelatedField(
+        source='ingredient', 
+        queryset=Ingredient.objects.all()
+    )
+    name = CharField(
+        source='ingredient.name',
+        read_only=True
+    )
+    measurement_unit = CharField(
+        source='ingredient.measurement_unit',
+        read_only=True
+    )
 
     class Meta:
         model = IngredientInRecipe
         fields = ('id', 'ingredient', 'name', 'measurement_unit')
-
-    def get_measurement_unit(self, ingredient_in_recipe):
-        return ingredient_in_recipe.ingredient.measurement_unit
-
-    def get_name(self, ingredient_in_recipe):
-        return ingredient_in_recipe.ingredient.name
 
 
 class IngredientInRecipeSerializer(ModelSerializer):
@@ -190,14 +192,10 @@ class RecipeWriteSerializer(ModelSerializer):
             raise ValueError('Нужен хотя бы один ингредиент!')
         ingredients_ids = []
         for item in value:
-            ingredient = get_object_or_404(Ingredient, id=item['id'])
-        if ingredient.id in ingredients_ids:
-            raise ValueError('Ингредиенты не должны повторяться!')
-        amount = int(item['amount'])
-        if amount <= 0:
-            raise ValueError('Количество ингредиента должно быть больше 0!')
+            ingredient = item['ingredient']
+            if ingredient.id in ingredients_ids:
+                raise ValueError('Ингредиенты не должны повторяться!')
         ingredients_ids.append(ingredient.id)
-        return value
 
     def validate_tags(self, value):
         if not value:

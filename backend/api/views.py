@@ -9,7 +9,8 @@ from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.exceptions import PermissionDenied
 
 from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
                             ShoppingCart, Tag)
@@ -47,6 +48,11 @@ class RecipeViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+    
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        if instance.author != self.request.user:
+            raise PermissionDenied(detail="You don't have permission to edit this recipe.", code=status.HTTP_403_FORBIDDEN)
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
