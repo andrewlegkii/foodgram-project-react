@@ -48,11 +48,12 @@ class RecipeViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-    
+
     def perform_update(self, serializer):
         instance = serializer.save()
         if instance.author != self.request.user:
-            raise PermissionDenied(detail="You don't have permission to edit this recipe.", code=status.HTTP_403_FORBIDDEN)
+            raise PermissionDenied(detail="Нет прав",
+                                   code=status.HTTP_403_FORBIDDEN)
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:
