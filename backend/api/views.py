@@ -16,7 +16,7 @@ from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
                             ShoppingCart, Tag)
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import CustomPagination
-from .permissions import IsAuthenticatedOrReadOnly
+from .permissions import IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
 from .serializers import (IngredientSerializer, RecipeReadSerializer,
                           RecipeShortSerializer, RecipeWriteSerializer,
                           TagSerializer)
@@ -41,19 +41,15 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 class RecipeViewSet(ModelViewSet):
     """Вьюсет для модели рецепта."""
     queryset = Recipe.objects.all()
-    permission_classes = [IsAuthenticated, IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated,
+                          IsAuthenticatedOrReadOnly,
+                          IsAuthorOrReadOnly]
     pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-
-    def perform_update(self, serializer):
-        instance = serializer.save()
-        if instance.author != self.request.user:
-            raise PermissionDenied(detail="Нет прав",
-                                   code=status.HTTP_403_FORBIDDEN)
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:

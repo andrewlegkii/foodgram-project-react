@@ -38,7 +38,7 @@ Update the environment variables in .env as needed.
 To start the application, simply run:
 docker-compose up
 
-This will start all of the services in the background and output their logs to your console. You can access the application by visiting http://localhost in your web browser.
+This will start all of the services in the background and output their logs to your console. You can access the application by visiting http://localhost:8000 in your web browser.
 
 To stop the application, press Ctrl+C or run:
 docker-compose down
