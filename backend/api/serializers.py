@@ -191,9 +191,11 @@ class RecipeWriteSerializer(ModelSerializer):
             raise ValueError('Нужен хотя бы один ингредиент!')
         ingredients_ids = []
         for item in value:
-            if item['ingredient'].id in ingredients_ids:
+            ingredient = item['ingredient']
+            ingredients_ids.append(ingredient.id)
+            if len(ingredients_ids) != len(set(ingredients_ids)):
                 raise ValueError('Ингредиенты не должны повторяться!')
-        ingredients_ids.append(item['ingredient'].id)
+
 
     def validate_tags(self, value):
         if not value:
