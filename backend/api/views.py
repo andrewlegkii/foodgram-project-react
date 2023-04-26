@@ -5,11 +5,13 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
+from rest_framework.permissions import (
+                                        SAFE_METHODS, IsAuthenticated,
+                                        AllowAny, IsAuthenticatedOrReadOnly
+                                        )
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
-from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 
 from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
                             ShoppingCart, Tag)
@@ -40,8 +42,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 class RecipeViewSet(ModelViewSet):
     """Вьюсет для модели рецепта."""
     queryset = Recipe.objects.all()
-    permission_classes = [IsAuthenticated,
-                          IsAuthenticatedOrReadOnly,
+    permission_classes = [IsAuthenticatedOrReadOnly,
                           IsAuthorOrReadOnly]
     pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend,)
