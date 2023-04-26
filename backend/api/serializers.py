@@ -196,7 +196,6 @@ class RecipeWriteSerializer(ModelSerializer):
             if len(ingredients_ids) != len(set(ingredients_ids)):
                 raise ValueError('Ингредиенты не должны повторяться!')
 
-
     def validate_tags(self, value):
         if not value:
             raise ValidationError({
