@@ -193,8 +193,6 @@ class RecipeWriteSerializer(ModelSerializer):
         for item in value:
             ingredient = item['ingredient']
             ingredients_ids.append(ingredient.id)
-            if len(ingredients_ids) != len(set(ingredients_ids)):
-                raise ValueError('Ингредиенты не должны повторяться!')
 
     def validate_tags(self, value):
         if not value:
