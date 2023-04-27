@@ -1,5 +1,3 @@
-import pdb
-
 from django.db.models import CharField
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -195,7 +193,7 @@ class RecipeWriteSerializer(ModelSerializer):
         for item in value:
             ingredient = item['ingredient']
             if ingredient.id in ingredients_ids:
-                raise ValueError(f'Ингредиент "{ingredient}" уже есть в списке!')
+                raise ValueError(f'Ингредиент "{ingredient}" использован!')
             ingredients_ids.append(ingredient.id)
 
     def validate_tags(self, value):
