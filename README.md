@@ -53,65 +53,66 @@ Push to the branch (git push origin my-new-feature)
 Create a new Pull Request
 
 # How to use
-Clone rep:
+1. Clone rep:
 git clone https://github.com/andrewlegkii/foodgram-project-react.git
 
-Login your server
+2. Login your server
 
-Install DOCKER:
+3. Install DOCKER:
 sudo apt install docker.io 
 
-Install docker-compose:
+4. Install docker-compose:
 curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
-Copy docker-compose.yaml amd nignix.conf to server: scp docker-compose.yml <username>@<host>:/home/<username>/docker-compose.yaml
+5. Copy docker-compose.yaml and nignix.conf to server: scp docker-compose.yml <username>@<host>:/home/<username>/docker-compose.yaml
 scp nginx.conf <username>@<host>:/home/<username>/nginx.conf
 
-Create file .env by use file - env.e
+6. Create file .env by use file - env.e
 
-Inatsall and activate virt env:
+7. Inatsall and activate virt env:
 python -m venv venv 
 source venv/Scripts/activate
 python -m pip install --upgrade pip
 
-Inatall all packages:
+8. Inatall all packages:
 pip install -r requirements.txt
 
-Start project in Docker:
+9. Start project in Docker:
 sudo docker-compose up -d --build
 
-Make some migrations:
+10. Make some migrations:
 sudo docker-compose exec backend python manage.py migrate
 
-Create superusre:
+11. Create superusre:
 sudo docker-compose exec backend python manage.py createsuperuser
 
-Statistic:
+12. Statistic:
 sudo docker-compose exec backend python manage.py collectstatic --no-input
 
-Text data:
+13. Text data:
 sudo docker-compose exec backend python manage.py load_ingredients
 
-To stop project:
+14. To stop project:
 docker-compose down -v
 
-Add github action secrets:
-DOCKER_USERNAME
-DOCKER_PASSWORD
-HOST
-USER
-SSH_KEY 
-DB_ENGINE - django.db.backends.postgresql
-DB_NAME
-POSTGRES_USER
-POSTGRES_PASSWORD
-DB_HOST
-DB_PORT
-SECRET_KEY - django secret
-ALLOWED_HOSTS - your server ip
-TELEGRAM_TO - chat id
-TELEGRAM_TOKEN - bot api
+15. Add github action secrets:
+1) DOCKER_USERNAME
+2) DOCKER_PASSWORD
+3) HOST
+4) USER
+5) SSH_KEY 
+6) DB_ENGINE - django.db.backends.postgresql
+7) DB_NAME
+8) POSTGRES_USER
+9) POSTGRES_PASSWORD
+10) DB_HOST
+11) DB_PORT
+12) SECRET_KEY - django secret
+13) ALLOWED_HOSTS - your server ip
+14) TELEGRAM_TO - chat id
+15) TELEGRAM_TOKEN - bot api
 
 # Author
-Andrew Legkii (https://github.com/andrewlegkii)
+Andrew Legkii (https://github.com/andrewlegkii) - backend
+Yandex - frontend
