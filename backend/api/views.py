@@ -104,9 +104,10 @@ class RecipeViewSet(ModelViewSet):
         """Метод для скачивания списка покупок."""
         user = request.user
         if not user.shopping_cart.exists():
-            return Response(status=HTTP_400_BAD_REQUEST)
+            return Response({'errors': 'Список покупок пуст!'},
+                            status=status.HTTP_400_BAD_REQUEST)
         ingredients = IngredientInRecipe.objects.filter(
-            recipes__shopping_cart__user=request.user
+            recipe__shopping_cart__user=request.user
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
@@ -125,7 +126,7 @@ class RecipeViewSet(ModelViewSet):
         shopping_list += f'\n\nFoodgram ({today:%Y})'
         filename = f'{user.username}_shopping_list.txt'
         response = HttpResponse(
-            shopping_list, content_type='text.txt; charset=utf-8'
+            shopping_list, content_type='text/plain; charset=utf-8'
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
