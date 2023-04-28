@@ -9,7 +9,7 @@ services:
       - ./.env
   
   web:
-    image: podlev/backend:latest
+    image: mukhinart/foodgram-backend:latest
     build: ../backend
     restart: always
     volumes:
@@ -21,7 +21,7 @@ services:
       - ./.env
 
   frontend:
-    image: podlev/frontend:latest
+    image: mukhinart/foodgram-frontend:latest
     build: ../frontend
     volumes:
       - ../frontend/:/app/result_build/
