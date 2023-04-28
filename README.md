@@ -3,6 +3,12 @@ http://84.201.154.235/recipes
 login - 4
 pass - 1234
 
+POSTMAN:
+Use Token for API
+4 - 36d9071f544de36dec70ddb122df1a4c2c33b115
+In app:
+Key - (Authorization); Value - (Token 36d9071f544de36dec70ddb122df1a4c2c33b115)
+
 This is a sample project that demonstrates how to use Docker Compose to run a web application with multiple services.
 
 # Overview
