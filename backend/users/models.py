@@ -1,35 +1,39 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
 from django.db import models
-
-from .utils import username_validator
 
 
 class User(AbstractUser):
-    first_name = models.CharField(
-        max_length=150,
-        verbose_name='Firstname'
+    first_name = models.CharField(verbose_name='Имя', max_length=150, blank=False)
+    last_name = models.CharField(verbose_name='Фамилия', max_length=150, blank=False)
+    email = models.EmailField(verbose_name='Email', blank=False, unique=True)
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+        ordering = ('id',)
+
+    def __str__(self):
+        return self.get_username()
+
+
+class Subscription(models.Model):
+    subscriber = models.ForeignKey(
+        to=User, verbose_name='Подписчик', on_delete=models.CASCADE, related_name='subscriber'
     )
-    last_name = models.CharField(
-        max_length=150,
-        verbose_name='Lastname'
-    )
-    username = models.CharField(
-        max_length=150,
-        verbose_name='Username',
-        unique=True,
-        validators=[RegexValidator(regex=r'^[\w.@+-]+\Z'), username_validator]
-    )
-    email = models.EmailField(
-        verbose_name='Email',
-        unique=True,
-        max_length=254
+    author = models.ForeignKey(
+        to=User, verbose_name='Автор', on_delete=models.CASCADE, related_name='following'
     )
 
     class Meta:
-        ordering = ['date_joined']
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
         constraints = [
             models.UniqueConstraint(
-                fields=['username', 'email'], name='unique_username_email'
+                fields=['subscriber', 'author'],
+                name='unique_subscription'
             )
         ]
+        ordering = ('id',)
+
+    def __str__(self):
+        return f'{self.subscriber} подписан на {self.author}'

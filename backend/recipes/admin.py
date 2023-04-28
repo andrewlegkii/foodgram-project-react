@@ -1,46 +1,55 @@
 from django.contrib import admin
-
-from recipes.models import (Favorite, Follow, Ingredient, Recipe,
-                            RecipeIngredient, ShoppingCard, Tag, TagRecipe)
-
-
-class RecipeIngredientLine(admin.TabularInline):
-    model = RecipeIngredient
-    min_num = 1
+from .models import (
+    Favorite, Ingredient, IngredientAmount, Recipe, ShoppingCart, Tag
+)
 
 
-@admin.register(Recipe)
-class RecipeAdmin(admin.ModelAdmin):
-    inlines = [RecipeIngredientLine]
-    list_display = (
-        'pk',
-        'name',
-        'author',
-        'cooking_time',
-        'pub_date',
-        'added_to_favorites_amount'
-
-    )
-    list_filter = ('name', 'author', 'tags', 'pub_date', 'cooking_time')
-    readonly_fields = ('added_to_favorites_amount',)
-    empty_value_display = '-пусто-'
-
-    def added_to_favorites_amount(self, obj):
-        return Favorite.objects.filter(recipe=obj).count()
-
-    added_to_favorites_amount.short_description = 'Добавлений в избранное'
-
-
-@admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ('name', 'measurement_unit')
-    search_fields = ('name',)
-    empty_value_display = '-пусто-'
+    search_fields = ('^name',)
 
 
-admin.site.register(Tag)
-admin.site.register(TagRecipe)
-admin.site.register(RecipeIngredient)
-admin.site.register(Follow)
-admin.site.register(ShoppingCard)
-admin.site.register(Favorite)
+class IngredientAmountAdmin(admin.ModelAdmin):
+    list_display = ('recipe', 'ingredient', 'amount')
+
+
+class IngredientAmountInline(admin.TabularInline):
+    model = IngredientAmount
+    fk_name = 'recipe'
+
+
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('user', 'recipe')
+
+
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = ('author', 'name', 'favorited')
+    list_filter = ('author', 'name', 'tags')
+    exclude = ('ingredients',)
+    search_fields = ('^name',)
+
+    inlines = [
+        IngredientAmountInline,
+    ]
+
+    @admin.display(empty_value='Никто')
+    def favorited(self, obj):
+        return Favorite.objects.filter(recipe=obj).count()
+
+    favorited.short_description = 'Кол-во людей добавивших в избранное'
+
+
+class ShoppingCartAdmin(admin.ModelAdmin):
+    list_display = ('user', 'recipe')
+
+
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('name', 'color', 'slug')
+
+
+admin.site.register(Ingredient, IngredientAdmin)
+admin.site.register(IngredientAmount, IngredientAmountAdmin)
+admin.site.register(Favorite, FavoriteAdmin)
+admin.site.register(Tag, TagAdmin)
+admin.site.register(ShoppingCart, ShoppingCartAdmin)
+admin.site.register(Recipe, RecipeAdmin)
