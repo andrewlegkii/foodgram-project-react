@@ -1,43 +1,26 @@
-import django_filters
-from django_filters import rest_framework
+from django_filters.rest_framework import (BooleanFilter, CharFilter,
+                                           FilterSet, filters)
 
-from recipes.models import Ingredient, Recipe
-
-
-class RecipeFilter(rest_framework.FilterSet):
-    tags = django_filters.AllValuesMultipleFilter(
-        field_name='tags__slug'
-    )
-    is_favorited = django_filters.NumberFilter(
-        method='get_is_favorited'
-    )
-    is_in_shopping_cart = django_filters.NumberFilter(
-        method='get_is_shopping_cart'
-    )
-
-    class Meta:
-        model = Recipe
-        fields = ('is_favorited', 'author', 'tags', 'is_in_shopping_cart', )
-
-    def get_is_favorited(self, queryset, name, value):
-        user = self.request.user
-        if value:
-            return queryset.filter(favorited__user_id=user.id)
-        return queryset.all()
-
-    def get_is_shopping_cart(self, queryset, name, value):
-        user = self.request.user
-        if value:
-            return queryset.filter(in_shopping_cart__user_id=user.id)
-        return queryset.all()
+from recipes.models import Ingredient, Recipe, Tag
 
 
-class IngredientFilter(rest_framework.FilterSet):
-    name = django_filters.CharFilter(
-        field_name='name',
-        lookup_expr='istartswith'
-    )
+class IngredientFilter(FilterSet):
+    name = filters.CharFilter(lookup_expr='startswith')
 
     class Meta:
         model = Ingredient
         fields = ('name',)
+
+
+class RecipeFilter(FilterSet):
+    author = CharFilter(field_name='author')
+    tags = filters.ModelMultipleChoiceFilter(
+        field_name='tags__slug',
+        to_field_name='slug',
+        queryset=Tag.objects.all())
+    is_favorited = BooleanFilter()
+    is_in_shopping_cart = BooleanFilter()
+
+    class Meta:
+        model = Recipe
+        fields = ('author', 'tags', 'is_favorited', 'is_in_shopping_cart')

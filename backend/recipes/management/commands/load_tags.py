@@ -1,19 +1,19 @@
 import csv
+from pathlib import Path
 
-from django.core.management.base import BaseCommand
+from django.conf import settings
+from django.core.management import BaseCommand
 
 from recipes.models import Tag
 
 
 class Command(BaseCommand):
-    def handle(self, **options):
-        with open("data/tags.csv", encoding='utf-8') as csv_file:
-            reader = csv.reader(csv_file, delimiter=",")
-            Tag.objects.bulk_create([
-                Tag(
-                    id=num,
-                    name=line[0],
-                    color=line[1],
-                    slug=line[2]
-                ) for num, line in enumerate(reader)
-            ])
+    def handle(self, *args, **kwargs):
+        with open(
+                Path(settings.PATH_DATA, 'tags.csv'),
+                encoding='utf-8'
+        ) as file:
+            reader = csv.DictReader(file)
+            Tag.objects.bulk_create(
+                Tag(**data) for data in reader)
+        self.stdout.write(self.style.SUCCESS('Теги успешно загружены в базу'))

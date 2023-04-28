@@ -1,18 +1,20 @@
 import csv
+from pathlib import Path
 
-from django.core.management.base import BaseCommand
+from django.conf import settings
+from django.core.management import BaseCommand
 
 from recipes.models import Ingredient
 
 
 class Command(BaseCommand):
-    def handle(self, **options):
-        with open("data/ingredients.csv", encoding='utf-8') as csv_file:
-            reader = csv.reader(csv_file, delimiter=",")
-            Ingredient.objects.bulk_create([
-                Ingredient(
-                    id=num,
-                    name=line[0],
-                    measurement_unit=line[1]
-                ) for num, line in enumerate(reader)
-            ])
+    def handle(self, *args, **kwargs):
+        with open(
+                Path(settings.PATH_DATA, 'ingredients.csv'),
+                encoding='utf-8'
+        ) as file:
+            reader = csv.DictReader(file)
+            Ingredient.objects.bulk_create(
+                Ingredient(**data) for data in reader)
+        self.stdout.write(
+            self.style.SUCCESS('Ингредиенты успешно загружены в базу'))
