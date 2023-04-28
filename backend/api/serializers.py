@@ -1,3 +1,4 @@
+from django.db.models import CharField
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
@@ -102,20 +103,21 @@ class SubscribeSerializer(CustomUserSerializer):
 
 class IngredientInRecipeWriteSerializer(ModelSerializer):
     ingredient = PrimaryKeyRelatedField(
+        source='ingredient',
         queryset=Ingredient.objects.all()
     )
-    name = SerializerMethodField()
-    measurement_unit = SerializerMethodField()
+    name = CharField(
+        source='ingredient.name',
+        read_only=True
+    )
+    measurement_unit = CharField(
+        source='ingredient.measurement_unit',
+        read_only=True
+    )
 
     class Meta:
         model = IngredientInRecipe
         fields = ('id', 'ingredient', 'name', 'measurement_unit')
-
-    def get_name(self, obj):
-        return obj.ingredient.name
-
-    def get_measurement_unit(self, obj):
-        return obj.ingredient.measurement_unit
 
 
 class IngredientInRecipeSerializer(ModelSerializer):

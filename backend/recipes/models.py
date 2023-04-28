@@ -55,6 +55,37 @@ class Ingredient(models.Model):
         return f'{self.name}, {self.measurement_unit}'
 
 
+class IngredientInRecipe(models.Model):
+    recipe = models.ForeignKey(
+        models.Recipe,
+        on_delete=models.CASCADE,
+        related_name='recipe_ingredients',
+        verbose_name='Рецепт',
+    )
+
+    ingredient = models.ForeignKey(
+        Ingredient,
+        on_delete=models.CASCADE,
+        related_name='ingredient_list',
+        verbose_name='Ингредиенты в рецепте',
+    )
+
+    amount = models.IntegerField(
+        default=1,
+        validators=[
+            MinValueValidator(1, 'Минимальное значение - 1')
+        ],
+        verbose_name='Количество ингредиента'
+    )
+
+    class Meta:
+        verbose_name = 'Ингредиент в рецепте'
+        verbose_name_plural = 'Ингредиенты в рецепте'
+
+    def __str__(self):
+        return f'{self.ingredient} - {self.amount} ({self.recipe})'
+
+
 class Recipe(models.Model):
     """
     Модель рецепта.
@@ -107,37 +138,6 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class IngredientInRecipe(models.Model):
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-        related_name='recipe_ingredients',
-        verbose_name='Рецепт',
-    )
-
-    ingredient = models.ForeignKey(
-        Ingredient,
-        on_delete=models.CASCADE,
-        related_name='ingredient_list',
-        verbose_name='Ингредиенты в рецепте',
-    )
-
-    amount = models.IntegerField(
-        default=1,
-        validators=[
-            MinValueValidator(1, 'Минимальное значение - 1')
-        ],
-        verbose_name='Количество ингредиента'
-    )
-
-    class Meta:
-        verbose_name = 'Ингредиент в рецепте'
-        verbose_name_plural = 'Ингредиенты в рецепте'
-
-    def __str__(self):
-        return f'{self.ingredient} - {self.amount} ({self.recipe})'
 
 
 class Favorite(models.Model):
