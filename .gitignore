@@ -127,13 +127,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# .idea
+# папки среды разработки
 .idea
-
-backend/media
-backend/foodgram/media
-# backend/foodgram/static
-
-.DS_Store
-backend/.DS_Store
-backend/foodgram/.DS_Store
+.vscode/
+*.code-workspace
