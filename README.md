@@ -11,6 +11,15 @@ Key - (Authorization); Value - (Token 36d9071f544de36dec70ddb122df1a4c2c33b115)
 
 This is a sample project that demonstrates how to use Docker Compose to run a web application with multiple services.
 
+# Postman
+Open Postman and navigate to the request that causes the 401 Unauthorized error.
+
+Select the "Headers" tab in the "Request" section on the right panel.
+
+Add a new header with the name "Authorization" and the value "Token my-token" (where replace "mytoken" with your valid token).
+
+Click on the "Send" button to repeat the request with the added authorization header.
+
 # Overview
 The project consists of the following services:
 
