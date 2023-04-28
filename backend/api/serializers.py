@@ -4,6 +4,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer, ReadOnlyField
+from rest_framework.fields import IntegerField, SerializerMethodField
 
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
@@ -102,22 +103,22 @@ class SubscribeSerializer(CustomUserSerializer):
 
 
 class IngredientInRecipeWriteSerializer(ModelSerializer):
-    ingredient = PrimaryKeyRelatedField(
-        source='ingredient',
-        queryset=Ingredient.objects.all()
-    )
-    name = CharField(
-        source='ingredient.name',
-        read_only=True
-    )
-    measurement_unit = CharField(
-        source='ingredient.measurement_unit',
-        read_only=True
-    )
+    id = IntegerField(write_only=True)
+    amount = IntegerField(required=True)
+    name = SerializerMethodField()
+    measurement_unit = SerializerMethodField()
 
     class Meta:
         model = IngredientInRecipe
-        fields = ('id', 'ingredient', 'name', 'measurement_unit')
+        fields = ('id', 'amount', 'name', 'measurement_unit')
+
+    def get_measurement_unit(self, ingredient):
+        measurement_unit = ingredient.ingredient.measurement_unit
+        return measurement_unit
+
+    def get_name(self, ingredient):
+        name = ingredient.ingredient.name
+        return name
 
 
 class IngredientInRecipeSerializer(ModelSerializer):
