@@ -1,8 +1,6 @@
 name: FOODGRAM-PROJECT
 
-on:
-  push:
-    branches: [ master ]
+on: [push]
 
 jobs:
   tests:
