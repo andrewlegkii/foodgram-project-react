@@ -39,8 +39,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 class RecipeViewSet(ModelViewSet):
     """Вьюсет для модели рецепта."""
     queryset = Recipe.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly,
-                          IsAuthorOrReadOnly]
+    permission_classes = [AllowAny]
     pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
@@ -56,7 +55,7 @@ class RecipeViewSet(ModelViewSet):
     @action(
         detail=True,
         methods=['post', 'delete'],
-        permission_classes=[IsAuthenticated]
+        permission_classes=[AllowAny]
     )
     def favorite(self, request, pk):
         if request.method == 'POST':
@@ -67,7 +66,7 @@ class RecipeViewSet(ModelViewSet):
     @action(
         detail=True,
         methods=['post', 'delete'],
-        permission_classes=[IsAuthenticated]
+        permission_classes=[AllowAny]
     )
     def shopping_cart(self, request, pk):
         """Метод для добавления/удаления из списка покупок."""
