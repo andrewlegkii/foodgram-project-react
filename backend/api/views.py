@@ -97,7 +97,7 @@ class RecipeViewSet(ModelViewSet):
 
     @action(
         detail=False,
-        permission_classes=[IsAuthenticated]
+        permission_classes=[AllowAny]
     )
     def download_shopping_cart(self, request):
         """Метод для скачивания списка покупок."""
