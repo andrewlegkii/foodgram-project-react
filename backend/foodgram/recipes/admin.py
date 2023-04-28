@@ -17,13 +17,9 @@ class TagAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-@admin.register(models.Recipe)
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'author', 'in_favorites')
-    list_editable = (
-        'name', 'cooking_time', 'text', 'tags',
-        'image', 'author'
-    )
+    list_display = ('pk', 'name', 'author', 'cooking_time', 'text', 'image')
+    list_editable = ('name', 'cooking_time', 'text', 'image')
     readonly_fields = ('in_favorites',)
     list_filter = ('name', 'author', 'tags')
     empty_value_display = '-пусто-'
