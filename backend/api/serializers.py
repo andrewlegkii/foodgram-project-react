@@ -1,4 +1,3 @@
-from django.db.models import CharField
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
