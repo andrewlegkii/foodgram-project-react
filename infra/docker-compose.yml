@@ -16,9 +16,7 @@ services:
     restart: always
 
   backend:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
+    image: mukhinart/foodgram-backend:latest
     restart: always
     volumes:
       - static_value:/backend/static/
@@ -29,9 +27,7 @@ services:
       - .env
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: mukhinart/foodgram-frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
