@@ -5,16 +5,17 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import (SAFE_METHODS,
-                                        AllowAny)
+from rest_framework.permissions import (SAFE_METHODS, IsAuthenticated,
+                                        AllowAny, IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
+from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
                             ShoppingCart, Tag)
 from .filters import IngredientFilter, RecipeFilter
 from .pagination import CustomPagination
-# from .permissions import IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly
+from .permissions import IsAuthorOrReadOnly
 from .serializers import (IngredientSerializer, RecipeReadSerializer,
                           RecipeShortSerializer, RecipeWriteSerializer,
                           TagSerializer)
@@ -39,7 +40,8 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 class RecipeViewSet(ModelViewSet):
     """Вьюсет для модели рецепта."""
     queryset = Recipe.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticatedOrReadOnly,
+                          IsAuthorOrReadOnly]
     pagination_class = CustomPagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
@@ -55,7 +57,7 @@ class RecipeViewSet(ModelViewSet):
     @action(
         detail=True,
         methods=['post', 'delete'],
-        permission_classes=[AllowAny]
+        permission_classes=[IsAuthenticated]
     )
     def favorite(self, request, pk):
         if request.method == 'POST':
@@ -66,7 +68,7 @@ class RecipeViewSet(ModelViewSet):
     @action(
         detail=True,
         methods=['post', 'delete'],
-        permission_classes=[AllowAny]
+        permission_classes=[IsAuthenticated]
     )
     def shopping_cart(self, request, pk):
         """Метод для добавления/удаления из списка покупок."""
@@ -96,14 +98,13 @@ class RecipeViewSet(ModelViewSet):
 
     @action(
         detail=False,
-        permission_classes=[AllowAny]
+        permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
         """Метод для скачивания списка покупок."""
         user = request.user
         if not user.shopping_cart.exists():
-            return Response({'errors': 'Список покупок пуст!'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=HTTP_400_BAD_REQUEST)
         ingredients = IngredientInRecipe.objects.filter(
             recipe__shopping_cart__user=request.user
         ).values(
@@ -124,7 +125,7 @@ class RecipeViewSet(ModelViewSet):
         shopping_list += f'\n\nFoodgram ({today:%Y})'
         filename = f'{user.username}_shopping_list.txt'
         response = HttpResponse(
-            shopping_list, content_type='text/plain; charset=utf-8'
+            shopping_list, content_type='text.txt; charset=utf-8'
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
