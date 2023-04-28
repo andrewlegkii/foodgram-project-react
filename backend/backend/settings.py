@@ -12,7 +12,7 @@ SECRET_KEY = ')w)cg$rly2*wy=%(p_d!ssp&%j7o#0*1lfrd%5v25mvbyu^@i@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', 'web', '84.201.154.235']
+ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://web', 'http://84.201.154.235']
 # Application definition
