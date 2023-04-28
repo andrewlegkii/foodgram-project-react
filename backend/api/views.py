@@ -129,4 +129,3 @@ class RecipeViewSet(ModelViewSet):
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
-
