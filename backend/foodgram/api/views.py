@@ -74,11 +74,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    """Работа с рецептами. Создание/изменение/удаление рецепта.
-    Получение информации о рецептах.
-    Добавление рецептов в избранное и список покупок.
-    Отправка файла со списком рецептов.
-    """
+    """Работа с рецептами."""
     queryset = Recipe.objects.all()
     permission_classes = (IsAdminAuthorOrReadOnly, )
     filter_backends = (DjangoFilterBackend,)
@@ -96,9 +92,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated, ]
     )
     def favorite(self, request, pk):
-        """Работа с избранными рецептами.
-        Удаление/добавление в избранное.
-        """
+        """Работа с избранными рецептами."""
         recipe = get_object_or_404(Recipe, id=pk)
         if request.method == 'POST':
             return create_model_instance(request, recipe, FavoriteSerializer)

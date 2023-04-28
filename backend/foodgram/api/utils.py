@@ -20,8 +20,7 @@ class Base64ImageField(serializers.ImageField):
 
 
 def create_ingredients(ingredients, recipe):
-    """Вспомогательная функция для добавления ингредиентов.
-    Используется при создании/редактировании рецепта."""
+    """Вспомогательная функция для добавления ингредиентов."""
     ingredient_list = []
     for ingredient in ingredients:
         current_ingredient = get_object_or_404(Ingredient,
@@ -51,9 +50,7 @@ def create_model_instance(request, instance, serializer_name):
 
 
 def delete_model_instance(request, model_name, instance, error_message):
-    """Вспомогательная функция для удаления рецепта
-    из избранного либо из списка покупок.
-    """
+    """Вспомогательная функция для удаления рецепта."""
     if not model_name.objects.filter(user=request.user,
                                      recipe=instance).exists():
         return Response({'errors': error_message},
