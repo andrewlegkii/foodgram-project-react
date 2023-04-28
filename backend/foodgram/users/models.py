@@ -38,7 +38,6 @@ class User(AbstractUser):
         blank=False,
         null=False,
     )
-    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
